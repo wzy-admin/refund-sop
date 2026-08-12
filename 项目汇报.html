@@ -738,6 +738,133 @@ section:nth-child(odd)  { background: var(--page); }
 .site-footer strong { color: rgba(255,255,255,0.8); }
 
 /* ============================================================
+   NEW — PROMPT CODE BLOCK
+   ============================================================ */
+.code-block {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 22px 24px;
+  font-family: "SF Mono", "Consolas", "Courier New", monospace;
+  font-size: 0.82rem;
+  line-height: 1.75;
+  color: #334155;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+/* ============================================================
+   NEW — AI INITIAL UNDERSTANDING (uncertain points)
+   ============================================================ */
+.goal-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.goal-card h4 { font-size: 0.95rem; margin-bottom: 6px; }
+.goal-card p  { font-size: 0.88rem; color: var(--ink-light); }
+.flow-inline {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 0.85rem;
+  color: #1e40af;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+.uncertain-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.uncertain-item {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+.uncertain-item .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--warn-bg);
+  color: #92400e;
+  font-weight: 800;
+  font-size: 0.75rem;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.uncertain-item strong { display: block; margin-bottom: 2px; }
+.uncertain-item p { color: var(--ink-light); }
+
+/* ============================================================
+   NEW — Q&A CHALLENGE CARDS
+   ============================================================ */
+.qa-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.qa-card:last-child { margin-bottom: 0; }
+.qa-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+}
+.qa-question {
+  background: #fef2f2;
+  border-left: 4px solid var(--danger);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+.qa-question .qa-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--danger);
+  display: block;
+  margin-bottom: 6px;
+}
+.qa-answer {
+  background: #eff6ff;
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+.qa-answer .qa-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 6px;
+}
+.qa-answer ul { padding-left: 18px; margin-top: 6px; }
+.qa-answer li { margin: 4px 0; }
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 768px) {
@@ -762,6 +889,7 @@ section:nth-child(odd)  { background: var(--page); }
   .tl-dot { left: -36px; width: 32px; height: 32px; font-size: 0.75rem; }
   .timeline::before { left: 15px; }
   .verdict-grid { grid-template-columns: 1fr; }
+  .uncertain-grid { grid-template-columns: 1fr; }
 }
 
 /* ============================================================
@@ -888,6 +1016,88 @@ section:nth-child(odd)  { background: var(--page); }
 </section>
 
 <!-- ============================================================
+     SECTION 4 — INITIAL PROMPT
+     ============================================================ -->
+<section>
+  <div class="section-inner">
+    <div class="sec-label">Step 1 · Prompt</div>
+    <div class="sec-title">初始 Prompt</div>
+    <div class="sec-subtitle">第一次喂给 AI 的完整业务描述，要求 AI 先复述理解、再设计方案、最后列出异常场景。</div>
+    <div class="code-block">你是一位资深业务流程顾问，擅长帮助客服团队做 SOP 标准化。
+
+背景：
+我们有一个线上课程 / 会员服务产品，用户购买后可能申请退款。
+目前客服新人处理退款时不统一：有的人直接退款，有的人反复追问用户，
+有的人不知道什么情况该升级给管理者。
+
+已知业务规则：
+1. 购买 7 天内，且用户未使用核心服务，可以优先退款。
+2. 超过 7 天，或用户已使用核心服务，需要人工审核。
+3. 单笔退款金额超过 500 元，需要管理者确认。
+4. 用户多次退款，需要标记风险。
+5. 信息不完整时，需要补充材料，不能直接拒绝。
+6. 最终必须给用户明确结果：通过、拒绝、补充材料中、人工审核中。
+
+请帮我：
+A. 先复述你对这个业务的理解（目标、用户、核心流程、不确定点）
+B. 然后设计一个"新人可执行"的退款处理流程
+C. 列出新人处理时必须查看的关键字段
+D. 列出所有不能直接退款的异常情况及处理方式</div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 5 — AI INITIAL UNDERSTANDING
+     ============================================================ -->
+<section>
+  <div class="section-inner">
+    <div class="sec-label">Step 2 · Analysis</div>
+    <div class="sec-title">AI 初版理解</div>
+    <div class="sec-subtitle">AI 在首次回应中对业务目标、流程的理解，以及它主动列出的 6 大不确定点。</div>
+
+    <div class="goal-card">
+      <h4>🎯 业务目标理解</h4>
+      <p>核心目标：将客服新人的退款处理行为标准化，消除"凭感觉处理"的不一致性，同时保护公司利益（防止滥用退款）和用户体验（合理退款顺畅通过）。</p>
+    </div>
+
+    <div class="flow-inline">
+      <strong>流程初步理解：</strong><br>
+      退款申请 → 检查材料完整性 → 检查是否快速退款条件<br>
+      &nbsp;&nbsp;→ [快速] 直接退款<br>
+      &nbsp;&nbsp;→ [非快速] 人工审核 → 可能需要管理者确认 → 给出结果
+    </div>
+
+    <div class="sec-title" style="font-size:1.2rem;margin-bottom:16px;">AI 列出的 6 大不确定点</div>
+    <div class="uncertain-grid">
+      <div class="uncertain-item">
+        <span class="num">1</span><strong>"核心服务"的具体定义是什么？</strong>
+        <p>是观看任意一节课程？还是观看超过一定比例？会员权益的"使用"怎么界定——登录即算，还是实际使用了某项权益？</p>
+      </div>
+      <div class="uncertain-item">
+        <span class="num">2</span><strong>"多次退款"的阈值是多少？</strong>
+        <p>2 次？3 次？是否区分时间窗口（如近 30 天 vs 近一年）？</p>
+      </div>
+      <div class="uncertain-item">
+        <span class="num">3</span><strong>管理者确认的机制是什么？</strong>
+        <p>是系统自动升级，还是客服手动转交？管理者不在时怎么办？</p>
+      </div>
+      <div class="uncertain-item">
+        <span class="num">4</span><strong>金额 &gt;500 元 + 满足快速退款时，优先级怎么处理？</strong>
+        <p>是优先快速退款，还是优先升级管理者？</p>
+      </div>
+      <div class="uncertain-item">
+        <span class="num">5</span><strong>"补充材料"的时限是多久？</strong>
+        <p>用户多久不补材料，系统自动关闭申请？</p>
+      </div>
+      <div class="uncertain-item">
+        <span class="num">6</span><strong>拒绝退款的依据是什么？</strong>
+        <p>除了规则判断，"人工审核"之后什么情况下决定拒绝？</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
      SECTION 4 — TIMELINE
      ============================================================ -->
 <section>
@@ -935,6 +1145,90 @@ section:nth-child(odd)  { background: var(--page); }
           <div class="tl-title">最终交付 — 文档 + 交互工具</div>
           <div class="tl-desc">交付完整的 Markdown 流程文档 + 可交互 HTML Demo 工具。新人输入退款信息，工具自动给出标准化处理建议。支持运营参数实时调整。</div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 7 — CHALLENGES
+     ============================================================ -->
+<section>
+  <div class="section-inner">
+    <div class="sec-label">Step 3 · Challenge</div>
+    <div class="sec-title">对抗质疑记录</div>
+    <div class="sec-subtitle">4 轮针对 AI 逻辑的质疑，每一轮都暴露并修正了一个关键漏洞。</div>
+
+    <div class="qa-card">
+      <div class="qa-title">质疑 ①｜规则优先级冲突</div>
+      <div class="qa-question">
+        <span class="qa-label">我的质疑</span>
+        你列了 5 条规则，但没说明当多条规则同时触发时怎么办。比如：一个用户在 3 天内申请退款 600 元，且已使用核心服务。同时命中了规则 2（已使用→人工审核）和规则 3（>500→管理者确认）和规则 1（不满足快速退款）。客服新人这时候该做什么？先人工审核再升级管理者？还是先升级管理者？
+      </div>
+      <div class="qa-answer">
+        <span class="qa-label">AI 的回应</span>
+        你说得对，这是规则优先级不清晰的问题。应该按以下优先级处理（高→低）：
+        <ul>
+          <li>1. 信息不完整 → 补充材料（最高优先，因为没有材料什么也判断不了）</li>
+          <li>2. 多次退款 → 标记风险 + 人工审核</li>
+          <li>3. 金额 &gt; 500 → 升级管理者确认</li>
+          <li>4. ≤7 天 + 未使用 → 快速退款</li>
+          <li>5. &gt;7 天 或 已使用 → 人工审核</li>
+        </ul>
+        多条规则同时触发时，按最高优先级的规则给出主结论，其余规则作为附加条件叠加在执行动作中。
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-title">质疑 ②｜"已使用核心服务"的判断标准模糊</div>
+      <div class="qa-question">
+        <span class="qa-label">我的质疑</span>
+        "核心服务"这个概念太模糊了。如果用户说"我就点进去看了一眼课程目录，没真正看视频"，这算使用了核心服务吗？新人客服怎么判断？需要给可操作的判断标准，而不是依赖客服的主观感觉。
+      </div>
+      <div class="qa-answer">
+        <span class="qa-label">AI 的回应</span>
+        这是一个关键的可操作性问题。建议用系统可查证的客观指标替代主观判断：
+        <ul>
+          <li>线上课程：观看任意一节课超过 30 秒，或下载了课程资料</li>
+          <li>会员服务：使用了会员专属权益（如 1v1 咨询、专属内容、折扣券实际核销）</li>
+          <li>直播课：进入过直播房间</li>
+        </ul>
+        核心原则：以系统日志为准，不以用户自述为准。新人客服不需要"判断"，只需要在后台系统查询对应的使用日志即可。
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-title">质疑 ③｜"补充材料"流程没有闭环</div>
+      <div class="qa-question">
+        <span class="qa-label">我的质疑</span>
+        你说"信息不完整时要求补充材料"，但没说然后呢。用户补了材料之后，流程是重新走一遍还是继续之前的判断？如果用户一直不补呢？如果用户说"我没有支付凭证，但是我确实付了钱"呢？这个分支你没考虑。
+      </div>
+      <div class="qa-answer">
+        <span class="qa-label">AI 的回应</span>
+        补充材料的子流程确实需要闭环设计：
+        <ul>
+          <li>补充时限：设定 3 个工作日，超时系统自动关闭申请</li>
+          <li>补充后流程：用户补交材料后，流程重新从第一步开始走完整判断（不跳过任何规则）</li>
+          <li>无法提供的材料：客服在后台查询系统记录代替，不要求用户提供</li>
+          <li>客服动作：主动在系统内查询能查到的那部分信息，把"需要用户补充"的清单缩到最短</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-title">质疑 ④｜规则的硬编码问题</div>
+      <div class="qa-question">
+        <span class="qa-label">我的质疑</span>
+        你的流程里有很多硬编码数字：7 天、500 元、2 次。这些数字从哪来的？如果运营团队下周说改成 14 天、1000 元、3 次，整个流程要改多少地方？有没有考虑过规则应该是可配置的？
+      </div>
+      <div class="qa-answer">
+        <span class="qa-label">AI 的回应</span>
+        这是流程设计层面的重要问题。建议：
+        <ul>
+          <li>这些阈值不应硬编码在流程文档中，而应作为可配置参数，来源是运营团队的策略配置</li>
+          <li>在流程文档中标注"当前值（可配置）"而非"固定值"</li>
+          <li>在 Demo 工具中，把这些阈值提取为顶部可调整的配置区，方便管理者根据策略调整</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -1158,6 +1452,45 @@ section:nth-child(odd)  { background: var(--page); }
 </section>
 
 <!-- ============================================================
+     SECTION 11 — KEY FIELDS
+     ============================================================ -->
+<section>
+  <div class="section-inner">
+    <div class="sec-label">Checklist</div>
+    <div class="sec-title">关键字段</div>
+    <div class="sec-subtitle">新人打开一个退款申请时，必须在系统中查看/确认的信息。</div>
+
+    <div style="overflow-x:auto;">
+    <table class="exception-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>字段</th>
+          <th>来源</th>
+          <th>用途</th>
+          <th>示例值</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><strong>订单编号</strong></td><td>支付系统</td><td>定位订单，查询详情</td><td>ORD-20260812-001</td></tr>
+        <tr><td>2</td><td><strong>购买时间</strong></td><td>支付系统</td><td>计算距今天数，判断是否 ≤7 天</td><td>2026-08-05 14:30</td></tr>
+        <tr><td>3</td><td><strong>退款金额</strong></td><td>支付系统</td><td>判断是否 &gt;500 元</td><td>¥299.00</td></tr>
+        <tr><td>4</td><td><strong>核心服务使用记录</strong></td><td>业务系统日志</td><td>判断是否已使用核心服务</td><td>课程观看记录 / 会员权益使用记录</td></tr>
+        <tr><td>5</td><td><strong>用户历史退款次数</strong></td><td>CRM / 客服系统</td><td>判断是否多次退款（≥2 次标记风险）</td><td>近一年 1 次</td></tr>
+        <tr><td>6</td><td><strong>退款原因</strong></td><td>用户提交</td><td>了解退款动机，辅助判断</td><td>"课程内容与描述不符"</td></tr>
+        <tr><td>7</td><td><strong>支付凭证</strong></td><td>用户提交</td><td>核对支付真实性</td><td>微信支付截图</td></tr>
+        <tr><td>8</td><td><strong>用户联系方式</strong></td><td>用户系统</td><td>后续通知、追问</td><td>手机号 / 邮箱</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p style="font-size:0.82rem;color:var(--ink-light);margin-top:16px;">
+      <strong>可查可不查（但有助于判断）：</strong> ⑨ 用户注册时间（判断是否新用户，老用户退款可能性低） ⑩ 用户历史购买金额（判断用户价值，高价值用户可酌情处理）。
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
      SECTION 8 — EXCEPTIONS TABLE
      ============================================================ -->
 <section>
@@ -1278,6 +1611,45 @@ section:nth-child(odd)  { background: var(--page); }
       </table>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 14 — AI ACCEPTANCE PROMPT
+     ============================================================ -->
+<section>
+  <div class="section-inner">
+    <div class="sec-label">Step 8 · QA Check</div>
+    <div class="sec-title">AI 验收 Prompt</div>
+    <div class="sec-subtitle">用于让 AI 以 QA 审核员身份，从 6 个维度审查流程完整性的验收 Prompt。</div>
+    <div class="code-block">你现在是一个 QA（质量保证）审核员，负责验收一份"退款申请处理流程"的 SOP 文档。
+
+请用以下标准逐项审查这份流程：
+
+1. 【完整性】流程是否覆盖了从用户提交申请到最终通知的完整闭环？
+   - 有没有遗漏的分支？有没有"悬空"的状态（进去了但不知道怎么出来）？
+
+2. 【可执行性】新人客服拿着这份流程，能否在不问任何人的情况下独立操作？
+   - 每一步的判断标准是否具体到"可以查系统"的程度？
+   - 有没有主观判断项（如"酌情处理""根据情况判断"）？如果有，标注出来。
+
+3. 【规则覆盖】以下场景是否都有明确的处理路径？
+   - 正常快速退款 / 材料不全 / 超过 7 天 / 已使用核心服务
+   - 大额退款 / 多次退款 / 多条规则同时触发 / 用户拒绝补充材料或超时未补充
+
+4. 【边界条件】
+   - 恰好第 7 天申请退款，算"≤7 天"还是">7 天"？
+   - 恰好 500 元，算">500"还是"≤500"？
+   - "多次退款"的计数窗口是一年还是永久？
+
+5. 【通知闭环】流程是否保证每个分支最终都通知到用户？
+
+6. 【工具支持】配套的 Demo 工具（refund-sop.html）是否正确实现了所有决策逻辑？
+
+请给出：
+- 验收结论：通过 / 有条件通过 / 不通过
+- 如果不通过或有条件通过：列出具体缺失项和修改建议
+- 给出一个 1-10 的完整性评分</div>
   </div>
 </section>
 
