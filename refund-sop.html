@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>退款处理 SOP — 新人检查清单</title>
+<style>
+  :root {
+    --green:  #16a34a;
+    --red:    #dc2626;
+    --yellow: #ca8a04;
+    --blue:   #2563eb;
+    --gray:   #6b7280;
+    --bg:     #f8fafc;
+    --card:   #ffffff;
+    --border: #e2e8f0;
+    --text:   #1e293b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #fff;
+    padding: 28px 32px;
+    text-align: center;
+  }
+  .header h1 { font-size: 1.6rem; font-weight: 700; }
+  .header p  { font-size: 0.9rem; opacity: 0.75; margin-top: 4px; }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 800px) { .container { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card h2 {
+    font-size: 1.05rem;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+  }
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #475569;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+  .hint { font-size: 0.78rem; color: var(--gray); margin-top: 2px; }
+  .btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-reset { background: #f1f5f9; color: #475569; margin-top: 8px; }
+  .btn-reset:hover { background: #e2e8f0; }
+
+  /* Steps */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 38px;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700;
+    flex-shrink: 0;
+    z-index: 1;
+    transition: all 0.3s;
+  }
+  .step-num.active { background: var(--blue); color: #fff; }
+  .step-num.pass { background: var(--green); color: #fff; }
+  .step-num.warn { background: var(--yellow); color: #fff; }
+  .step-num.fail { background: var(--red); color: #fff; }
+  .step-body { flex: 1; }
+  .step-body strong { font-size: 0.88rem; }
+  .step-body span { font-size: 0.78rem; color: var(--gray); display: block; }
+
+  /* Result */
+  .result-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.95rem; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .badge-pass   { background: #dcfce7; color: var(--green); }
+  .badge-reject { background: #fee2e2; color: var(--red); }
+  .badge-more   { background: #fef9c3; color: var(--yellow); }
+  .badge-review { background: #dbeafe; color: var(--blue); }
+  .badge-risk   { background: #fce7f3; color: #a21caf; }
+
+  .rule-list { margin: 12px 0; }
+  .rule-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; margin: 4px 0;
+    border-radius: 6px;
+    font-size: 0.84rem;
+    transition: all 0.3s;
+  }
+  .rule-item.triggered { background: #fef2f2; border-left: 3px solid var(--red); }
+  .rule-item.satisfied { background: #f0fdf4; border-left: 3px solid var(--green); }
+  .rule-item.neutral   { background: #f8fafc; border-left: 3px solid var(--border); }
+  .rule-icon { font-size: 1rem; flex-shrink: 0; }
+
+  .action-panel {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .action-panel h3 { font-size: 0.9rem; margin-bottom: 8px; }
+  .action-panel ul { padding-left: 18px; font-size: 0.85rem; }
+  .action-panel li { margin: 4px 0; }
+
+  .verdict-box {
+    margin-top: 16px;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .verdict-box h3 { font-size: 1.1rem; margin-bottom: 6px; }
+  .verdict-box p  { font-size: 0.85rem; opacity: 0.8; }
+  .verdict-pass   { background: #dcfce7; color: #166534; }
+  .verdict-review { background: #dbeafe; color: #1e40af; }
+  .verdict-more   { background: #fef9c3; color: #854d0e; }
+  .verdict-reject { background: #fee2e2; color: #991b1b; }
+  .verdict-risk   { background: #fce7f3; color: #86198f; }
+
+  .config-bar {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    padding: 10px 16px; background: #f1f5f9; border-radius: 8px;
+    margin-bottom: 16px; font-size: 0.8rem;
+  }
+  .config-bar label { font-weight: 600; color: #475569; }
+  .config-bar input { width: 72px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.8rem; text-align: center; }
+  .config-bar span { color: var(--gray); }
+
+  .meta { font-size: 0.75rem; color: var(--gray); margin-top: 20px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📋 退款处理 SOP · 新人检查清单</h1>
+  <p>输入退款申请信息 → 自动判断处理路径 → 给出标准化处理建议</p>
+</div>
+
+<div class="container">
+
+  <!-- ========== LEFT: Form ========== -->
+  <div>
+    <div class="card">
+      <h2>⚙️ 运营参数（可配置）</h2>
+      <div class="config-bar">
+        <label>快速退款天数 ≤</label>
+        <input type="number" id="cfgDays" value="7" min="1"> <span>天</span>
+        <label>大额阈值 ></label>
+        <input type="number" id="cfgAmount" value="500" min="0"> <span>元</span>
+        <label>风险次数 ≥</label>
+        <input type="number" id="cfgRiskCount" value="2" min="1"> <span>次</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📝 退款申请信息</h2>
+
+      <div class="form-group">
+        <label>购买天数</label>
+        <input type="number" id="days" min="0" value="3" placeholder="例如：3">
+        <div class="hint">从购买日到申请退款日的天数</div>
+      </div>
+
+      <div class="form-group">
+        <label>是否已使用核心服务</label>
+        <select id="usedCore">
+          <option value="no">否 — 未观看课程 / 未使用会员权益</option>
+          <option value="yes">是 — 已观看课程 / 已使用会员权益</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>退款金额（元）</label>
+        <input type="number" id="amount" min="0" step="0.01" value="200" placeholder="例如：200">
+      </div>
+
+      <div class="form-group">
+        <label>历史退款次数（近一年）</label>
+        <input type="number" id="historyCount" min="0" value="0" placeholder="例如：0">
+        <div class="hint">该用户在过去一年内的退款记录数</div>
+      </div>
+
+      <div class="form-group">
+        <label>申请材料是否完整</label>
+        <select id="materialComplete">
+          <option value="yes">完整 — 含订单号、退款原因、支付凭证</option>
+          <option value="no">不完整 — 缺少必要材料</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" onclick="analyze()">🔍 分析退款申请</button>
+      <button class="btn btn-reset" onclick="resetAll()">↻ 重置</button>
+    </div>
+
+    <!-- Steps -->
+    <div class="card" style="margin-top:16px">
+      <h2>📊 流程步骤追踪</h2>
+      <div class="steps" id="stepList"></div>
+    </div>
+  </div>
+
+  <!-- ========== RIGHT: Results ========== -->
+  <div>
+    <div class="card">
+      <h2>🧠 规则匹配结果</h2>
+      <div id="ruleResult">
+        <p style="color:var(--gray); font-size:0.85rem;">等待输入... 点击「分析退款申请」查看规则命中情况</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px" id="verdictCard">
+      <h2>🎯 最终结论</h2>
+      <div id="verdictContent">
+        <p style="color:var(--gray); font-size:0.85rem;">等待分析...</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>📋 新人执行动作</h2>
+      <div id="actionContent">
+        <p style="color:var(--gray); font-size:0.85rem;">等待分析...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="meta">退款处理 SOP 工具 v1.0 · 帮助客服新人标准化处理退款申请</p>
+
+<script>
+// ============================================================
+// 核心决策引擎
+// ============================================================
+
+function getConfig() {
+  return {
+    maxDays:    parseInt(document.getElementById('cfgDays').value) || 7,
+    maxAmount:  parseFloat(document.getElementById('cfgAmount').value) || 500,
+    riskCount:  parseInt(document.getElementById('cfgRiskCount').value) || 2,
+  };
+}
+
+function getFormData() {
+  return {
+    days:             parseInt(document.getElementById('days').value) || 0,
+    usedCore:         document.getElementById('usedCore').value === 'yes',
+    amount:           parseFloat(document.getElementById('amount').value) || 0,
+    historyCount:     parseInt(document.getElementById('historyCount').value) || 0,
+    materialComplete: document.getElementById('materialComplete').value === 'yes',
+  };
+}
+
+function analyze() {
+  const cfg = getConfig();
+  const d = getFormData();
+
+  // Build rules dynamically from config
+  const rules = [
+    {
+      id: 'material',
+      label: '信息完整性检查',
+      check: () => !d.materialComplete,
+      desc: () => d.materialComplete ? '✓ 材料完整' : '✗ 材料不完整 → 需补充',
+      action: 'more_info',
+      title: '补充材料中',
+      priority: 1,
+    },
+    {
+      id: 'risk',
+      label: '风险用户标记',
+      check: () => d.historyCount >= cfg.riskCount,
+      desc: () => d.historyCount >= cfg.riskCount
+        ? `⚠ 历史退款 ${d.historyCount} 次（≥${cfg.riskCount}次）→ 标记风险用户`
+        : `✓ 历史退款 ${d.historyCount} 次，未触发风险`,
+      action: 'risk_flag',
+      title: '标记风险 + 人工审核',
+      priority: 2,
+    },
+    {
+      id: 'amount',
+      label: '大额退款检查',
+      check: () => d.amount > cfg.maxAmount,
+      desc: () => d.amount > cfg.maxAmount
+        ? `⚠ 金额 ${d.amount} 元 > ${cfg.maxAmount} 元 → 需管理者确认`
+        : `✓ 金额 ${d.amount} 元 ≤ ${cfg.maxAmount} 元，无需升级`,
+      action: 'escalate',
+      title: '升级管理者确认',
+      priority: 3,
+    },
+    {
+      id: 'quick',
+      label: '快速退款通道',
+      check: () => d.days <= cfg.maxDays && !d.usedCore,
+      desc: () => {
+        if (d.days <= cfg.maxDays && !d.usedCore) return `✓ ≤${cfg.maxDays}天 且 未使用核心服务 → 符合快速退款条件`;
+        const parts = [];
+        if (d.days > cfg.maxDays) parts.push(`已过 ${d.days} 天（>${cfg.maxDays}天）`);
+        if (d.usedCore) parts.push('已使用核心服务');
+        return `✗ ${parts.join('，')} → 不满足快速退款`;
+      },
+      action: 'approve',
+      title: '建议通过',
+      priority: 4,
+    },
+    {
+      id: 'review',
+      label: '人工审核',
+      check: () => d.days > cfg.maxDays || d.usedCore,
+      desc: () => {
+        const reasons = [];
+        if (d.days > cfg.maxDays) reasons.push(`已过 ${d.days} 天（>${cfg.maxDays}天）`);
+        if (d.usedCore) reasons.push('已使用核心服务');
+        return `⚠ ${reasons.join('，')} → 需人工审核`;
+      },
+      action: 'manual_review',
+      title: '人工审核中',
+      priority: 5,
+    },
+  ];
+
+  // Evaluate all rules
+  const results = rules.map(r => ({ ...r, triggered: r.check() }));
+
+  // Find highest priority triggered rule
+  const triggeredList = results.filter(r => r.triggered).sort((a, b) => a.priority - b.priority);
+  const primary = triggeredList[0] || results[results.length - 1];
+
+  const ACTION_META = {
+    approve:       { badge: 'badge-pass',   label: '✅ 通过',     desc: '同意退款，执行退款操作并通知用户' },
+    reject:        { badge: 'badge-reject', label: '❌ 拒绝',     desc: '拒绝退款，注明具体原因并告知用户' },
+    more_info:     { badge: 'badge-more',   label: '📎 补充材料中', desc: '材料不完整，列出缺失项并通知用户补充' },
+    manual_review: { badge: 'badge-review', label: '🔍 人工审核中', desc: '需人工审核，转交审核队列并告知用户预计时间' },
+    escalate:      { badge: 'badge-review', label: '⬆ 已升级',    desc: '金额超限需管理者确认，已通知管理者' },
+    risk_flag:     { badge: 'badge-risk',   label: '🚩 风险标记',  desc: '用户多次退款，标记风险并转人工审核' },
+  };
+  const meta = ACTION_META[primary.action];
+
+  renderRules(results, primary, d);
+  renderVerdict(primary, meta);
+  renderSteps(results);
+  renderActions(d, results);
+}
+
+// ---- Render Functions ----
+
+function renderRules(results, primary, d) {
+  const triggeredList = results.filter(r => r.triggered);
+  let html = '<div class="rule-list">';
+  for (const r of results) {
+    let cls = 'neutral';
+    if (r === primary && r.triggered) cls = 'triggered';
+    else if (!r.triggered) cls = 'satisfied';
+    else if (r.triggered && r !== primary) cls = 'triggered';
+    const icon = r.triggered ? (r === primary ? '🔴' : '🟡') : '🟢';
+    html += `<div class="rule-item ${cls}">
+      <span class="rule-icon">${icon}</span>
+      <span><strong>R${r.priority}: ${r.label}</strong> — ${r.desc()}</span>
+    </div>`;
+  }
+  html += '</div>';
+  if (triggeredList.length > 1) {
+    html += '<p style="font-size:0.78rem;color:var(--gray);margin-top:8px;">⚠ 多条规则命中，按优先级取第一条作为主结论，其余规则附加到执行动作中</p>';
+  }
+  document.getElementById('ruleResult').innerHTML = html;
+}
+
+function renderVerdict(primary, meta) {
+  document.getElementById('verdictContent').innerHTML = `
+    <span class="result-badge ${meta.badge}">${meta.label}</span>
+    <p style="font-size:0.9rem;">${meta.desc}</p>
+  `;
+}
+
+function renderSteps(results) {
+  const stepStatus = {};
+  stepStatus[1] = results.find(r => r.id === 'material').triggered ? 'fail' : 'pass';
+  stepStatus[2] = results.find(r => r.id === 'risk').triggered ? 'warn' : 'pass';
+  stepStatus[3] = results.find(r => r.id === 'amount').triggered ? 'warn' : 'pass';
+  stepStatus[4] = results.find(r => r.id === 'quick').triggered ? 'pass' : 'warn';
+  stepStatus[5] = 'active';
+
+  const steps = [
+    { id: 1, label: '核对材料',       desc: '检查订单号、退款原因、支付凭证是否齐全' },
+    { id: 2, label: '检查风险',       desc: '查询用户历史退款记录，判断是否风险用户' },
+    { id: 3, label: '金额判断',       desc: '退款金额是否超过阈值，决定是否升级' },
+    { id: 4, label: '时效 & 使用判断', desc: '天数内 + 未使用核心服务 → 快速通道；否则 → 人工审核' },
+    { id: 5, label: '给出结论',       desc: '向用户明确告知：通过/拒绝/补充材料/审核中' },
+  ];
+
+  let html = '';
+  for (const s of steps) {
+    const cls = stepStatus[s.id] || '';
+    let clsName = 'step-num';
+    if (cls === 'pass') clsName += ' pass';
+    else if (cls === 'warn') clsName += ' warn';
+    else if (cls === 'fail') clsName += ' fail';
+    else if (cls === 'active') clsName += ' active';
+    html += `<div class="step">
+      <div class="${clsName}">${s.id}</div>
+      <div class="step-body">
+        <strong>${s.label}</strong>
+        <span>${s.desc}</span>
+      </div>
+    </div>`;
+  }
+  document.getElementById('stepList').innerHTML = html;
+}
+
+function renderActions(d, results) {
+  const triggeredList = results.filter(r => r.triggered).sort((a, b) => a.priority - b.priority);
+  const actions = [];
+
+  for (const rule of triggeredList) {
+    switch (rule.action) {
+      case 'more_info':
+        actions.push('📎 <strong>补充材料：</strong>列出缺失材料清单（订单号/退款原因/支付凭证），通过短信/邮件通知用户补充，设定 3 个工作日补交期限，超时自动关闭');
+        break;
+      case 'risk_flag':
+        actions.push('🚩 <strong>标记风险：</strong>在 CRM 系统中为该用户添加「高风险退款」标签，记录本次退款申请，转交人工审核队列');
+        break;
+      case 'escalate':
+        actions.push('⬆ <strong>升级管理者：</strong>将退款申请转给当值管理者审批，附上订单详情和用户历史记录，管理者确认后方可操作');
+        break;
+      case 'approve':
+        actions.push('✅ <strong>执行退款：</strong>在支付平台（微信/支付宝）操作原路退款，退款完成后发送通知（含退款金额、预计到账时间）');
+        break;
+      case 'manual_review':
+        actions.push('🔍 <strong>人工审核：</strong>将申请放入审核队列，审核人员评估用户使用情况（观看记录/会员使用日志）后决定是否退款');
+        break;
+    }
+  }
+
+  if (actions.length === 0) {
+    actions.push('✅ 无异常触发，按标准流程执行退款');
+  }
+  actions.push('📢 <strong>通知用户：</strong>无论结果如何，必须在 24 小时内向用户发送明确的结果通知');
+
+  let html = '<ul>';
+  for (const a of actions) { html += `<li>${a}</li>`; }
+  html += '</ul>';
+  document.getElementById('actionContent').innerHTML = html;
+}
+
+function resetAll() {
+  document.getElementById('days').value = 3;
+  document.getElementById('usedCore').value = 'no';
+  document.getElementById('amount').value = 200;
+  document.getElementById('historyCount').value = 0;
+  document.getElementById('materialComplete').value = 'yes';
+  document.getElementById('ruleResult').innerHTML = '<p style="color:var(--gray); font-size:0.85rem;">等待输入... 点击「分析退款申请」查看规则命中情况</p>';
+  document.getElementById('verdictContent').innerHTML = '<p style="color:var(--gray); font-size:0.85rem;">等待分析...</p>';
+  document.getElementById('actionContent').innerHTML = '<p style="color:var(--gray); font-size:0.85rem;">等待分析...</p>';
+  const steps = [
+    { id: 1, label: '核对材料',       desc: '检查订单号、退款原因、支付凭证是否齐全' },
+    { id: 2, label: '检查风险',       desc: '查询用户历史退款记录，判断是否风险用户' },
+    { id: 3, label: '金额判断',       desc: '退款金额是否超过阈值，决定是否升级' },
+    { id: 4, label: '时效 & 使用判断', desc: '天数内 + 未使用核心服务 → 快速通道；否则 → 人工审核' },
+    { id: 5, label: '给出结论',       desc: '向用户明确告知：通过/拒绝/补充材料/审核中' },
+  ];
+  document.getElementById('stepList').innerHTML = steps.map(s => `
+    <div class="step">
+      <div class="step-num">${s.id}</div>
+      <div class="step-body"><strong>${s.label}</strong><span>${s.desc}</span></div>
+    </div>`).join('');
+}
+
+// Initialize
+resetAll();
+</script>
+
+</body>
+</html>
